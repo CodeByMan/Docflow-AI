@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: docflow_ai
+      POSTGRES_USER: docflow_app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in a private .env file}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docflow_app -d docflow_ai"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: production
+      DEPLOYMENT_MODE: hosted
+      DOCFLOW_API_KEY: ${DOCFLOW_API_KEY:?Set DOCFLOW_API_KEY in a private .env file}
+      DATABASE_URL: postgresql+asyncpg://docflow_app:${POSTGRES_PASSWORD}@db:5432/docflow_ai
+      CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-http://localhost:8080}
+      TRUSTED_HOSTS: ${TRUSTED_HOSTS:-localhost,127.0.0.1,api}
+      STORAGE_DIR: /data/uploads
+    volumes:
+      - document_data:/data
+    expose:
+      - "8000"
+    command: ["sh", "-c", "alembic upgrade head && exec uvicorn app.production_main:app --host 0.0.0.0 --port 8000 --proxy-headers"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  document_data:

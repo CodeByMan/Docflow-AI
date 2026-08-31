@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: docflow_ai
+      POSTGRES_USER: docflow_app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in a private .env file}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docflow_app -d docflow_ai"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      APP_ENV: development
+      DEPLOYMENT_MODE: local
+      DATABASE_URL: postgresql+asyncpg://docflow_app:${POSTGRES_PASSWORD}@db:5432/docflow_ai
+      CORS_ALLOW_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      TRUSTED_HOSTS: localhost,127.0.0.1,api
+      STORAGE_DIR: /data/uploads
+    volumes:
+      - document_data:/data
+
+volumes:
+  postgres_data:
+  document_data:
