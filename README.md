@@ -82,11 +82,9 @@ DocFlow-AI does not use an LLM or machine-learning model. The name is project br
 
 ## 🖼️ Screenshots
 
-```markdown
 | DocFlow-AI |
 | --- |
 | ![Homepage](docs/screenshots/homepage.png) |
-```
 
 ---
 
