@@ -4,7 +4,7 @@
 
 A FastAPI + Vue platform for securely uploading business documents, extracting bounded content, applying explainable rule-based analysis, tracking jobs, and reviewing structured results.
 
-![Python](https://img.shields.io/badge/Python-3.11%2B-3776ab?style=for-the-badge&logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.13%2B-3776ab?style=for-the-badge&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![Vue](https://img.shields.io/badge/Frontend-Vue%203-42b883?style=for-the-badge&logo=vuedotjs&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-4169e1?style=for-the-badge&logo=postgresql&logoColor=white)
@@ -100,7 +100,7 @@ DocFlow-AI does not use an LLM or machine-learning model. The name is project br
 
 ### Backend
 
-- Python 3.11+
+- Python 3.13+
 - FastAPI 0.116
 - Uvicorn
 - Pydantic Settings
@@ -234,7 +234,7 @@ See [DATABASE_SETUP.md](DATABASE_SETUP.md) and [SECURITY.md](SECURITY.md) for de
 Install:
 
 - Windows 10 or Windows 11
-- Python 3.11 or newer; Python 3.13 is tested in CI
+- Python 3.13 or newer
 - Node.js 22 LTS or a compatible release
 - npm
 - Docker Desktop only for the container workflow
