@@ -171,13 +171,12 @@ docflow-ai/
 ├── alembic.ini
 ├── docker-compose.production.yml
 ├── docker-compose.yml
-├── Dockerfile
 ├── Dockerfile.production
 ├── LICENSE
 └── README.md
 ```
 
-The application creates its SQLite database and upload folders locally. Databases, uploaded files, secrets, environments, caches, dependencies, and generated frontend output are excluded from Git.
+The application creates its SQLite database and upload folders locally. `Dockerfile.production` is used for both the local container workflow and the hosted stack. Databases, uploaded files, secrets, environments, caches, dependencies, and generated frontend output are excluded from Git.
 
 ---
 
@@ -362,7 +361,7 @@ npm run test
 npm run build
 ```
 
-The frontend suite currently contains **6 tests**. GitHub Actions repeats linting, all tests, and the frontend production build on pushes and pull requests.
+The frontend suite currently contains **6 tests**. GitHub Actions repeats the frontend tests and production build on pushes and pull requests.
 
 ### Dependency Import Smoke Test
 
@@ -395,7 +394,7 @@ Upload `sample-karachi-invoice.txt` through the Vue dashboard. The completed res
 | `python -m compileall -q app migrations tests scripts` | Compile-check Python source |
 | `npm run test` | Run frontend tests |
 | `npm run build` | Build the production frontend |
-| `docker compose up --build` | Start PostgreSQL and API in local mode |
+| `docker compose up --build` | Start the local SQLite API container |
 | `docker compose -f docker-compose.production.yml up --build` | Start hosted stack |
 | `docker compose -f docker-compose.production.yml down` | Stop hosted stack |
 
@@ -458,15 +457,15 @@ PDF / DOCX / XLSX / CSV / JSON / Markdown / Text
 
 Docker is optional. The standard Windows virtual-environment workflow does not require Ubuntu or WSL.
 
-### Local PostgreSQL and API
+### Local SQLite API
 
 ```bat
-copy /Y .env.production.example .env
+copy /Y .env.example .env
 notepad .env
 docker compose up --build
 ```
 
-The default Compose file binds PostgreSQL and FastAPI to localhost and keeps `DEPLOYMENT_MODE=local`.
+The default Compose file runs only the FastAPI service in local mode with SQLite. It binds the API to localhost and persists the database and uploads in the `document_data` volume.
 
 ### Hosted Stack
 
